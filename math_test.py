@@ -27,23 +27,31 @@ class Question:
         }
 
 class Test:
-    def __init__(self, range1, range2, number_questions, operations_list=["+", "-", "*", "/"], decimals=(0, 0), exact_division=True):
-        self.range1 = range1
-        self.range2 = range2
-        self.number_questions = number_questions
-        self.operations_list = operations_list
-        self.questions = self._generate_questions(decimals=decimals, exact_division=exact_division)
+    
+    def __init__(self, number_questions, ranges_by_op, operations_list=["+", "-", "*", "/"], decimals=(0, 0), exact_division=True):
+            self.number_questions = number_questions
+            self.ranges_by_op = ranges_by_op
+            self.operations_list = operations_list
+            self.questions = self._generate_questions(decimals=decimals, exact_division=exact_division)
 
     def _generate_questions(self, decimals=(0, 0), exact_division=True):
-        numbers1 = np.random.randint(self.range1[0], self.range1[1]+1, self.number_questions)
-        numbers2 = np.random.randint(self.range2[0], self.range2[1]+1, self.number_questions)
-        operations = np.random.choice(self.operations_list, self.number_questions)
-        if exact_division:
-            n2div = [np.random.choice(divisors(n1)[1:-1]) if len(divisors(n1)) > 2 else np.random.choice(divisors(n1)) for n1 in numbers1]
-            numbers2 = np.where(operations == "/", n2div, numbers2)
-        numbers1 = numbers1 * 10.0 ** (-np.random.choice(np.arange(decimals[0] + 1), self.number_questions))
-        numbers2 = numbers2 * 10.0 ** (-np.random.choice(np.arange(decimals[1] + 1), self.number_questions))
-        return [Question(numbers1[i], numbers2[i], operations[i]) for i in range(self.number_questions)]
+        questions = []
+        for _ in range(self.number_questions):
+            op = np.random.choice(self.operations_list)
+            r1, r2 = self.ranges_by_op[op]
+            n1 = np.random.randint(r1[0], r1[1]+1)
+            n2 = np.random.randint(r2[0], r2[1]+1)
+            if exact_division and op == "/":
+                divs = divisors(n1)
+                if len(divs) > 2:
+                    n2 = np.random.choice(divs[1:-1])
+                elif divs:
+                    n2 = np.random.choice(divs)
+            n1 = n1 * 10.0 ** (-np.random.choice(np.arange(decimals[0] + 1)))
+            n2 = n2 * 10.0 ** (-np.random.choice(np.arange(decimals[1] + 1)))
+            questions.append(Question(n1, n2, op))
+        return questions
+
 
     def get_questions(self):
         return [q.to_dict() for q in self.questions]

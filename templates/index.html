@@ -7,19 +7,49 @@
         body {
             font-family: sans-serif;
             padding: 20px;
-            max-width: 600px;
+            max-width: 700px;
             margin: auto;
         }
         input, select {
             margin: 5px 0;
             padding: 5px;
-            width: 100%;
         }
         .question {
-            margin: 10px 0;
+            margin: 20px 0;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
         }
         .hidden {
             display: none;
+        }
+        label {
+            display: inline-block;
+            width: 30px;
+        }
+        .range-group {
+            margin-bottom: 10px;
+        }
+        .op-symbol {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 10px;
+            display: inline-block;
+            width: 20px;
+            text-align: center;
+        }
+        .question-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 6px;
+        }
+        .question-expression {
+            font-size: 1.7em;
+            margin-bottom: 10px;
+        }
+        .answer-box {
+            font-size: 1.2em;
+            width: 120px;
+            padding: 5px;
         }
     </style>
 </head>
@@ -29,31 +59,53 @@
     <h2>Test Settings</h2>
     <form id="settingsForm">
         <div>
-            <label>Operand 1 Range:</label>
-            from
-            <input type="number" id="range1_min" value="1" style="width: 80px; display: inline-block;">
-            to
-            <input type="number" id="range1_max" value="20" style="width: 80px; display: inline-block;">
-        </div>
-        
-        <div>
-            <label>Operand 2 Range:</label>
-            from
-            <input type="number" id="range2_min" value="1" style="width: 80px; display: inline-block;">
-            to
-            <input type="number" id="range2_max" value="20" style="width: 80px; display: inline-block;">
-        </div>
-        
-        <div>
-            <label>Number of Questions:</label>
-            <input type="number" id="numQuestions" value="5" min="1" max="100", style="width: 80px; display: inline-block;">
+            <label>Questions:</label><br>
+            <input type="number" id="numQuestions" value="5" min="1" max="100" style="width: 80px;">
         </div>
 
-        <label>Operations:</label><br>
-        <label><input type="checkbox" value="+" checked> +</label>
-        <label><input type="checkbox" value="-" checked> −</label>
-        <label><input type="checkbox" value="*" checked> ×</label>
-        <label><input type="checkbox" value="/" checked> ÷</label><br><br>
+        <div>
+            <strong>Choose Operations:</strong><br>
+            <label><input type="checkbox" value="+" checked> +</label>
+            <label><input type="checkbox" value="-" checked> −</label>
+            <label><input type="checkbox" value="*" checked> ×</label>
+            <label><input type="checkbox" value="/" checked> ÷</label>
+        </div>
+
+        <div id="operationRanges">
+            <p><strong>Operand Ranges by Operation:</strong></p>
+
+            <div class="range-group">
+                <input type="number" id="plus_r1_min" value="1" style="width: 60px;"> to
+                <input type="number" id="plus_r1_max" value="10" style="width: 60px;">
+                <span class="op-symbol">+</span>
+                <input type="number" id="plus_r2_min" value="1" style="width: 60px;"> to
+                <input type="number" id="plus_r2_max" value="10" style="width: 60px;">
+            </div>
+
+            <div class="range-group">
+                <input type="number" id="minus_r1_min" value="10" style="width: 60px;"> to
+                <input type="number" id="minus_r1_max" value="50" style="width: 60px;">
+                <span class="op-symbol">−</span>
+                <input type="number" id="minus_r2_min" value="1" style="width: 60px;"> to
+                <input type="number" id="minus_r2_max" value="25" style="width: 60px;">
+            </div>
+
+            <div class="range-group">
+                <input type="number" id="mult_r1_min" value="2" style="width: 60px;"> to
+                <input type="number" id="mult_r1_max" value="9" style="width: 60px;">
+                <span class="op-symbol">×</span>
+                <input type="number" id="mult_r2_min" value="2" style="width: 60px;"> to
+                <input type="number" id="mult_r2_max" value="9" style="width: 60px;">
+            </div>
+
+            <div class="range-group">
+                <input type="number" id="div_r1_min" value="2" style="width: 60px;"> to
+                <input type="number" id="div_r1_max" value="100" style="width: 60px;">
+                <span class="op-symbol">÷</span>
+                <input type="number" id="div_r2_min" value="1" style="width: 60px;"> to
+                <input type="number" id="div_r2_max" value="10" style="width: 60px;">
+            </div>
+        </div>
 
         <button type="submit">Generate Test</button>
     </form>
@@ -80,21 +132,41 @@
         settingsForm.addEventListener("submit", async function(event) {
             event.preventDefault();
 
-            const range1 = [
-                parseInt(document.getElementById("range1_min").value),
-                parseInt(document.getElementById("range1_max").value)
-            ];
-            const range2 = [
-                parseInt(document.getElementById("range2_min").value),
-                parseInt(document.getElementById("range2_max").value)
-            ];
             const number_questions = parseInt(document.getElementById("numQuestions").value);
             const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            const opMap = {
+                "+": "plus",
+                "-": "minus",
+                "*": "mult",
+                "/": "div"
+            };
+
+            const ranges_by_op = {};
+            operations.forEach(op => {
+                const prefix = opMap[op];
+
+                const r1_min = parseInt(document.getElementById(`${prefix}_r1_min`).value);
+                const r1_max = parseInt(document.getElementById(`${prefix}_r1_max`).value);
+                const r2_min = parseInt(document.getElementById(`${prefix}_r2_min`).value);
+                const r2_max = parseInt(document.getElementById(`${prefix}_r2_max`).value);
+
+                ranges_by_op[op] = [
+                    [r1_min, r1_max],
+                    [r2_min, r2_max]
+                ];
+            });
 
             const res = await fetch("/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ range1, range2, number_questions, operations })
+                body: JSON.stringify({
+                    number_questions,
+                    operations,
+                    ranges_by_op,
+                    decimals: [0, 0],
+                    exact_division: true
+                })
             });
 
             const data = await res.json();
@@ -106,8 +178,9 @@
                 const div = document.createElement("div");
                 div.className = "question";
                 div.innerHTML = `
-                    <label>Question ${i + 1}: ${q.question}</label><br>
-                    <input type="text" name="answer" data-index="${i}">
+                    <div class="question-label">Question ${i + 1}:</div>
+                    <div class="question-expression">${q.pretty || q.question}</div>
+                    <input type="text" name="answer" data-index="${i}" class="answer-box">
                 `;
                 questionList.appendChild(div);
             });
