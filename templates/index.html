@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mental Math Test</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        input, select {
+            margin: 5px 0;
+            padding: 5px;
+            width: 100%;
+        }
+        .question {
+            margin: 10px 0;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Mental Math Trainer</h1>
+
+    <h2>Test Settings</h2>
+    <form id="settingsForm">
+        <div>
+            <label>Operand 1 Range:</label>
+            from
+            <input type="number" id="range1_min" value="1" style="width: 80px; display: inline-block;">
+            to
+            <input type="number" id="range1_max" value="20" style="width: 80px; display: inline-block;">
+        </div>
+        
+        <div>
+            <label>Operand 2 Range:</label>
+            from
+            <input type="number" id="range2_min" value="1" style="width: 80px; display: inline-block;">
+            to
+            <input type="number" id="range2_max" value="20" style="width: 80px; display: inline-block;">
+        </div>
+        
+        <div>
+            <label>Number of Questions:</label>
+            <input type="number" id="numQuestions" value="5" min="1" max="100", style="width: 80px; display: inline-block;">
+        </div>
+
+        <label>Operations:</label><br>
+        <label><input type="checkbox" value="+" checked> +</label>
+        <label><input type="checkbox" value="-" checked> −</label>
+        <label><input type="checkbox" value="*" checked> ×</label>
+        <label><input type="checkbox" value="/" checked> ÷</label><br><br>
+
+        <button type="submit">Generate Test</button>
+    </form>
+
+    <div id="testContainer" class="hidden">
+        <h2>Answer the Questions</h2>
+        <form id="answerForm">
+            <div id="questionList"></div>
+            <button type="submit">Submit Answers</button>
+        </form>
+    </div>
+
+    <div id="results" class="hidden"></div>
+
+    <script>
+        const settingsForm = document.getElementById("settingsForm");
+        const testContainer = document.getElementById("testContainer");
+        const questionList = document.getElementById("questionList");
+        const answerForm = document.getElementById("answerForm");
+        const resultsDiv = document.getElementById("results");
+
+        let currentQuestions = [];
+
+        settingsForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const range1 = [
+                parseInt(document.getElementById("range1_min").value),
+                parseInt(document.getElementById("range1_max").value)
+            ];
+            const range2 = [
+                parseInt(document.getElementById("range2_min").value),
+                parseInt(document.getElementById("range2_max").value)
+            ];
+            const number_questions = parseInt(document.getElementById("numQuestions").value);
+            const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+            const res = await fetch("/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ range1, range2, number_questions, operations })
+            });
+
+            const data = await res.json();
+            currentQuestions = data.questions;
+
+            // Show questions
+            questionList.innerHTML = "";
+            currentQuestions.forEach((q, i) => {
+                const div = document.createElement("div");
+                div.className = "question";
+                div.innerHTML = `
+                    <label>Question ${i + 1}: ${q.question}</label><br>
+                    <input type="text" name="answer" data-index="${i}">
+                `;
+                questionList.appendChild(div);
+            });
+
+            testContainer.classList.remove("hidden");
+            resultsDiv.classList.add("hidden");
+        });
+
+        answerForm.addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const answers = Array.from(answerForm.querySelectorAll('input[name="answer"]'))
+                                 .map(input => input.value.trim());
+
+            const res = await fetch("/submit", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ answers })
+            });
+
+            const data = await res.json();
+
+            resultsDiv.innerHTML = `
+                <h2>Result</h2>
+                <p>Score: ${data.score}</p>
+                <p>Correct: ${data.correct} / ${data.total} (${data.accuracy}%)</p>
+            `;
+
+            resultsDiv.classList.remove("hidden");
+        });
+    </script>
+</body>
+</html>
