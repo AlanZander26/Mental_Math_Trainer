@@ -1,0 +1,61 @@
+body {
+    font-family: sans-serif;
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+}
+input, select {
+    margin: 5px 0;
+    padding: 5px;
+}
+.question {
+    margin: 20px 0;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.hidden {
+    display: none;
+}
+label {
+    display: inline-block;
+    width: 30px;
+}
+.range-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+}
+.range-group input[type="number"] {
+    width: 40px;
+}
+.op-symbol {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin: 0 0px;
+    display: inline-block;
+    /*width: 20px;*/
+    /*text-align: center;*/
+    vertical-align: middle;
+}
+.checkbox-label input[type="checkbox"] {
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
+    display: inline-block;
+}
+.question-label {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+}
+.question-expression {
+    font-size: 1.7em;
+    margin-bottom: 10px;
+}
+.answer-box {
+    font-size: 1.2em;
+    width: 120px;
+    padding: 5px;
+}
