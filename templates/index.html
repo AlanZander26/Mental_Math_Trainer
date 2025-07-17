@@ -13,7 +13,8 @@
         <div>
             <strong>Number of Questions:</strong><br>
             <input type="number" id="numQuestions" value="5" min="1" max="100" style="width: 40px;">
-        </div><hr>
+        </div>
+        <hr>
 
         <div>
             <strong>Choose Operations:</strong><br>
@@ -33,8 +34,8 @@
             <label class="checkbox-label">
                 <input type="checkbox" value="/" checked>
             </label>
-        </div><hr>
-        
+        </div>
+        <hr>
 
         <div id="operationRanges">
             <p><strong>Operand Ranges:</strong></p>
@@ -70,14 +71,30 @@
                 <input type="number" id="div_r2_min" value="2"> to
                 <input type="number" id="div_r2_max" value="20">
             </div>
-        </div><hr>
+        </div>
+        <hr>
+
+        <div id="scoringSettings">
+            <p><strong>Scoring Settings:</strong></p>
+            <label style="width: 400px;">Points for correct answer:
+                <input type="number" id="pointsCorrect" value="1" style="width: 40px;">
+            </label><br>
+            <label style="width: 400px;">Points for blank answer:
+                <input type="number" id="pointsBlank" value="0" style="width: 40px;">
+            </label><br>
+            <label style="width: 400px;">Points for wrong answer:
+                <input type="number" id="pointsWrong" value="-1" style="width: 40px;">
+            </label>
+        </div>
+        <hr>
+        
 
         <button type="submit">Start Test</button>
     </form>
 
     <div id="testContainer" class="hidden">
         <h2>Answer the Questions</h2>
-        <form id="answerForm">
+        <form id="answerForm" autocomplete="off">
             <div id="questionList"></div>
             <button type="submit">Submit Answers</button>
         </form>

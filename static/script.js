@@ -5,6 +5,7 @@ const answerForm = document.getElementById("answerForm");
 const resultsDiv = document.getElementById("results");
 
 let currentQuestions = [];
+let startTime = null;
 
 const opCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
 const opToRangeId = {
@@ -38,6 +39,10 @@ settingsForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const number_questions = parseInt(document.getElementById("numQuestions").value);
+    const pointsCorrect = parseInt(document.getElementById("pointsCorrect").value);
+    const pointsBlank = parseInt(document.getElementById("pointsBlank").value);
+    const pointsWrong = parseInt(document.getElementById("pointsWrong").value);
+
     const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
 
     const opMap = {
@@ -70,9 +75,11 @@ settingsForm.addEventListener("submit", async function(event) {
             operations,
             ranges_by_op,
             decimals: [0, 0],
-            exact_division: true
+            exact_division: true,
+            rating: [pointsCorrect, pointsBlank, pointsWrong]
         })
     });
+
 
     const data = await res.json();
 

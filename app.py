@@ -18,6 +18,7 @@ def generate_test():
     operations = data.get("operations", ["+", "-", "*", "/"])
     decimals = data.get("decimals", [0, 0])
     exact_division = data.get("exact_division", True)
+    rating = data.get("rating", [1, 0, -1])
 
     # Expecting a dictionary like { "+": [[1, 10], [1, 10]], "-" : [[5, 20], [0, 10]], ... }
     raw_ranges = data.get("ranges_by_op", {})
@@ -39,8 +40,10 @@ def generate_test():
         ranges_by_op=ranges_by_op,
         operations_list=operations,
         decimals=tuple(decimals),
-        exact_division=exact_division
+        exact_division=exact_division 
     )
+
+    app.config["current_rating"] = rating
 
     questions = current_test.get_questions()
     return jsonify({"questions": questions})
@@ -53,7 +56,8 @@ def submit_test():
 
     data = request.get_json()
     user_answers = data.get("answers", [])
-    result = current_test.grade_test(user_answers)
+    rating = app.config.get("current_rating", [1, 0, -1])
+    result = current_test.grade_test(user_answers, rating=rating)
     return jsonify(result)
 
 if __name__ == "__main__":
