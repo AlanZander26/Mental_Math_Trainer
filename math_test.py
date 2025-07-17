@@ -13,21 +13,35 @@ class Question:
         self.operand2 = operand2
         self.operation = operation
         self.operation_str = f"{operand1} {operation} {operand2}"
-        self.answer = float(eval(self.operation_str))
-
-    def __str__(self):
-        return self.operation_str    
+        self.answer = float(eval(self.operation_str))    
 
     def to_dict(self):
-        return {
-            "question": self.operation_str,
-            "operand1": self.operand1,
-            "operand2": self.operand2,
-            "operation": self.operation
+        def format_number(n):
+            return str(int(n)) if n == int(n) else str(n)
+
+        op_symbols = {
+            "+": "+",
+            "-": "−",
+            "*": "×",
+            "/": "÷"
         }
 
-class Test:
+        pretty = f"{format_number(self.operand1)} {op_symbols[self.operation]} {format_number(self.operand2)}"
+
+        return {
+            "operand1": self.operand1,
+            "operand2": self.operand2,
+            "operation": self.operation,
+            "question": pretty  
+        }
     
+    def __str__(self):
+        return self.to_dict()["question"]
+
+
+
+class Test:
+
     def __init__(self, number_questions, ranges_by_op, operations_list=["+", "-", "*", "/"], decimals=(0, 0), exact_division=True):
             self.number_questions = number_questions
             self.ranges_by_op = ranges_by_op

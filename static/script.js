@@ -75,6 +75,7 @@ settingsForm.addEventListener("submit", async function(event) {
     });
 
     const data = await res.json();
+
     currentQuestions = data.questions;
 
     // Show questions
@@ -84,7 +85,7 @@ settingsForm.addEventListener("submit", async function(event) {
         div.className = "question";
         div.innerHTML = `
             <div class="question-label">Question ${i + 1}:</div>
-            <div class="question-expression">${q.pretty || q.question}</div>
+            <div class="question-expression">${q.question}</div>
             <input type="text" name="answer" data-index="${i}" class="answer-box">
         `;
         questionList.appendChild(div);
