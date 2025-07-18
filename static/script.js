@@ -165,14 +165,33 @@ answerForm.addEventListener("submit", async function(event) {
     const data = await res.json();
 
     resultsDiv.innerHTML = `
-    <div class="result-card">
-        <h2>📊 Test Results</h2>
-        <div class="result-item"><strong>Score:</strong> ${data.score}</div>
-        <div class="result-item"><strong>Correct:</strong> ${data.correct} / ${data.total}</div>
-        <div class="result-item"><strong>Accuracy:</strong> ${data.accuracy}%</div>
-        <button type="button" id="exitAfterResults" class="exit-button">Exit</button>
-    </div>
-`;
+        <div class="result-card">
+            <h2>📊 Test Results</h2>
+            <div class="result-item"><strong>Score:</strong> ${data.score}</div>
+            <div class="result-item"><strong>Correct:</strong> ${data.correct} / ${data.total}</div>
+            <div class="result-item"><strong>Accuracy:</strong> ${data.accuracy}%</div>
+            <button type="button" id="exitAfterResults" class="exit-button">Exit</button>
+            <button type="button" id="viewAnswersBtn" class="view-button">View Answers</button>
+            <div id="answerReview" class="hidden"></div>
+        </div>
+    `;
+
+    document.getElementById("viewAnswersBtn").addEventListener("click", () => {
+        const container = document.getElementById("answerReview");
+        container.classList.remove("hidden");
+    
+        container.innerHTML = data.results.map((r, i) => {
+            const bgColor = r.status === "correct" ? "lightgreen" : "#f8d0d0";
+            return `
+                <div class="answer-block" style="background-color: ${bgColor};">
+                    <div><strong>Question ${i + 1}:</strong> ${r.question}</div>
+                    <div><strong>Your Answer:</strong> ${r.user_answer}</div>
+                    <div><strong>Correct Answer:</strong> ${r.correct_answer}</div>
+                </div>
+            `;
+        }).join("");
+    });
+    
 
     resultsDiv.classList.remove("hidden");
     testContainer.classList.add("hidden");
