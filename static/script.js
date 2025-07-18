@@ -149,8 +149,14 @@ answerForm.addEventListener("submit", async function(event) {
         <h2>Result</h2>
         <p>Score: ${data.score}</p>
         <p>Correct: ${data.correct} / ${data.total} (${data.accuracy}%)</p>
+        <button type="button" id="exitAfterResults">Exit</button>
     `;
 
     resultsDiv.classList.remove("hidden");
     testContainer.classList.add("hidden");
+    document.getElementById("exitAfterResults").addEventListener("click", () => {
+        resultsDiv.classList.add("hidden");
+        document.getElementById("settingsForm").classList.remove("hidden");
+    });
+    
 });
