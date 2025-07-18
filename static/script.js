@@ -98,10 +98,10 @@ function renderQuestion(index) {
             <div class="question-expression">${q.question}</div>
             <input type="text" id="answerInput" class="answer-box" value="${savedAnswer}">
         </div>
-        <div style="margin-top: 10px;">
-            ${index > 0 ? '<button type="button" id="prevBtn">Previous</button>' : ''}
-            ${index < currentQuestions.length - 1 ? '<button type="button" id="nextBtn">Next</button>' : ''}
-            ${index === currentQuestions.length - 1 ? '<button type="submit" id="submitBtn">Submit</button>' : ''}
+        <div class="nav-buttons">
+            <button type="button" id="exitBtn">Exit</button>
+            <button type="button" id="prevBtn" style="visibility: ${index > 0 ? 'visible' : 'hidden'};">Previous</button>
+            ${index < currentQuestions.length - 1? '<button type="button" id="nextBtn">Next</button>': '<button type="submit" id="submitBtn">Submit</button>'}
         </div>
     `;
 
@@ -120,6 +120,16 @@ function renderQuestion(index) {
             renderQuestion(currentQuestionIndex);
         });
     }
+
+    document.getElementById("exitBtn").addEventListener("click", () => {
+        if (confirm("Are you sure you want to exit the test? All progress will be lost.")) {
+            // Reset the test view
+            testContainer.classList.add("hidden");
+            resultsDiv.classList.add("hidden");
+            document.getElementById("settingsForm").classList.remove("hidden");
+        }
+    });
+    
 }
 
 answerForm.addEventListener("submit", async function(event) {
