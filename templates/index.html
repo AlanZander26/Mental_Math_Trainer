@@ -7,96 +7,96 @@
 </head>
 <body>
     <h1>🧠 Mental Math Trainer</h1>
+    <div id="settingsSection">
+        <form id="settingsForm">
+            <h2>Test Settings</h2>
+            <div>
+                <strong>Number of Questions:</strong><br>
+                <input type="number" id="numQuestions" value="5" min="1" max="100" style="width: 40px;">
+            </div>
+            <hr>
 
-    <h2>Test Settings</h2>
-    <form id="settingsForm">
-        <div>
-            <strong>Number of Questions:</strong><br>
-            <input type="number" id="numQuestions" value="5" min="1" max="100" style="width: 40px;">
-        </div>
-        <hr>
-
-        <div>
-            <strong>Choose Operations:</strong><br>
-            <span class="op-symbol">+</span>
-            <label class="checkbox-label">
-                <input type="checkbox" value="+" checked>
-            </label>
-            <span class="op-symbol">−</span>
-            <label class="checkbox-label">
-                <input type="checkbox" value="-" checked>
-            </label>
-            <span class="op-symbol">×</span>
-            <label class="checkbox-label">
-                <input type="checkbox" value="*" checked>
-            </label>
-            <span class="op-symbol">÷</span>
-            <label class="checkbox-label">
-                <input type="checkbox" value="/" checked>
-            </label>
-        </div>
-        <hr>
-
-        <div id="operationRanges">
-            <p><strong>Operand Ranges:</strong></p>
-
-            <div id="range-plus" class="range-group">
-                <input type="number" id="plus_r1_min" value="5"> to
-                <input type="number" id="plus_r1_max" value="999">
+            <div>
+                <strong>Choose Operations:</strong><br>
                 <span class="op-symbol">+</span>
-                <input type="number" id="plus_r2_min" value="5"> to
-                <input type="number" id="plus_r2_max" value="99">
-            </div>
-
-            <div id="range-minus" class="range-group">
-                <input type="number" id="minus_r1_min" value="5"> to
-                <input type="number" id="minus_r1_max" value="999">
+                <label class="checkbox-label">
+                    <input type="checkbox" value="+" checked>
+                </label>
                 <span class="op-symbol">−</span>
-                <input type="number" id="minus_r2_min" value="5"> to
-                <input type="number" id="minus_r2_max" value="99">
-            </div>
-
-            <div id="range-mult" class="range-group">
-                <input type="number" id="mult_r1_min" value="2"> to
-                <input type="number" id="mult_r1_max" value="99">
+                <label class="checkbox-label">
+                    <input type="checkbox" value="-" checked>
+                </label>
                 <span class="op-symbol">×</span>
-                <input type="number" id="mult_r2_min" value="2"> to
-                <input type="number" id="mult_r2_max" value="20">
-            </div>
-
-            <div id="range-div" class="range-group">
-                <input type="number" id="div_r1_min" value="2"> to
-                <input type="number" id="div_r1_max" value="999">
+                <label class="checkbox-label">
+                    <input type="checkbox" value="*" checked>
+                </label>
                 <span class="op-symbol">÷</span>
-                <input type="number" id="div_r2_min" value="2"> to
-                <input type="number" id="div_r2_max" value="20">
+                <label class="checkbox-label">
+                    <input type="checkbox" value="/" checked>
+                </label>
             </div>
-        </div>
-        <hr>
+            <hr>
 
-        <div id="scoringSettings">
-            <p><strong>Scoring Settings:</strong></p>
-            <label style="width: 400px;">Points for correct answer:
-                <input type="number" id="pointsCorrect" value="1" style="width: 40px;">
-            </label><br>
-            <label style="width: 400px;">Points for blank answer:
-                <input type="number" id="pointsBlank" value="0" style="width: 40px;">
-            </label><br>
-            <label style="width: 400px;">Points for wrong answer:
-                <input type="number" id="pointsWrong" value="-1" style="width: 40px;">
-            </label>
-        </div>
-        <hr>
-        
+            <div id="operationRanges">
+                <p><strong>Operand Ranges:</strong></p>
 
-        <button type="submit">Start Test</button>
-    </form>
+                <div id="range-plus" class="range-group">
+                    <input type="number" id="plus_r1_min" value="5"> to
+                    <input type="number" id="plus_r1_max" value="999">
+                    <span class="op-symbol">+</span>
+                    <input type="number" id="plus_r2_min" value="5"> to
+                    <input type="number" id="plus_r2_max" value="99">
+                </div>
+
+                <div id="range-minus" class="range-group">
+                    <input type="number" id="minus_r1_min" value="5"> to
+                    <input type="number" id="minus_r1_max" value="999">
+                    <span class="op-symbol">−</span>
+                    <input type="number" id="minus_r2_min" value="5"> to
+                    <input type="number" id="minus_r2_max" value="99">
+                </div>
+
+                <div id="range-mult" class="range-group">
+                    <input type="number" id="mult_r1_min" value="2"> to
+                    <input type="number" id="mult_r1_max" value="99">
+                    <span class="op-symbol">×</span>
+                    <input type="number" id="mult_r2_min" value="2"> to
+                    <input type="number" id="mult_r2_max" value="20">
+                </div>
+
+                <div id="range-div" class="range-group">
+                    <input type="number" id="div_r1_min" value="2"> to
+                    <input type="number" id="div_r1_max" value="999">
+                    <span class="op-symbol">÷</span>
+                    <input type="number" id="div_r2_min" value="2"> to
+                    <input type="number" id="div_r2_max" value="20">
+                </div>
+            </div>
+            <hr>
+
+            <div id="scoringSettings">
+                <p><strong>Scoring Settings:</strong></p>
+                <label style="width: 400px;">Points for correct answer:
+                    <input type="number" id="pointsCorrect" value="1" style="width: 40px;">
+                </label><br>
+                <label style="width: 400px;">Points for blank answer:
+                    <input type="number" id="pointsBlank" value="0" style="width: 40px;">
+                </label><br>
+                <label style="width: 400px;">Points for wrong answer:
+                    <input type="number" id="pointsWrong" value="-1" style="width: 40px;">
+                </label>
+            </div>
+            <hr>
+            
+
+            <button type="submit">Start Test</button>
+        </form>
+    </div>
 
     <div id="testContainer" class="hidden">
         <h2>Answer the Questions</h2>
         <form id="answerForm" autocomplete="off">
             <div id="questionList"></div>
-            <button type="submit">Submit Answers</button>
         </form>
     </div>
 

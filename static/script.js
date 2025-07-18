@@ -5,7 +5,8 @@ const answerForm = document.getElementById("answerForm");
 const resultsDiv = document.getElementById("results");
 
 let currentQuestions = [];
-let startTime = null;
+let currentQuestionIndex = 0;
+let answers = [];
 
 const opCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
 const opToRangeId = {
@@ -19,14 +20,10 @@ opCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
         const rangeId = opToRangeId[checkbox.value];
         const rangeDiv = document.getElementById(rangeId);
-        if (checkbox.checked) {
-            rangeDiv.style.display = 'flex'; // or 'block'
-        } else {
-            rangeDiv.style.display = 'none';
-        }
+        rangeDiv.style.display = checkbox.checked ? 'flex' : 'none';
     });
 
-    // Hide on page load if unchecked
+    // Initial hide on page load if unchecked
     const rangeId = opToRangeId[checkbox.value];
     const rangeDiv = document.getElementById(rangeId);
     if (!checkbox.checked) {
@@ -34,15 +31,10 @@ opCheckboxes.forEach(checkbox => {
     }
 });
 
-
 settingsForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
     const number_questions = parseInt(document.getElementById("numQuestions").value);
-    const pointsCorrect = parseInt(document.getElementById("pointsCorrect").value);
-    const pointsBlank = parseInt(document.getElementById("pointsBlank").value);
-    const pointsWrong = parseInt(document.getElementById("pointsWrong").value);
-
     const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
 
     const opMap = {
@@ -67,6 +59,10 @@ settingsForm.addEventListener("submit", async function(event) {
         ];
     });
 
+    const pointsCorrect = parseInt(document.getElementById("pointsCorrect").value);
+    const pointsBlank = parseInt(document.getElementById("pointsBlank").value);
+    const pointsWrong = parseInt(document.getElementById("pointsWrong").value);
+
     const res = await fetch("/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,33 +76,56 @@ settingsForm.addEventListener("submit", async function(event) {
         })
     });
 
-
     const data = await res.json();
-
     currentQuestions = data.questions;
-
-    // Show questions
-    questionList.innerHTML = "";
-    currentQuestions.forEach((q, i) => {
-        const div = document.createElement("div");
-        div.className = "question";
-        div.innerHTML = `
-            <div class="question-label">Question ${i + 1}:</div>
-            <div class="question-expression">${q.question}</div>
-            <input type="text" name="answer" data-index="${i}" class="answer-box">
-        `;
-        questionList.appendChild(div);
-    });
+    answers = Array(currentQuestions.length).fill("");
+    currentQuestionIndex = 0;
 
     testContainer.classList.remove("hidden");
+    settingsForm.classList.add("hidden");
     resultsDiv.classList.add("hidden");
+
+    renderQuestion(currentQuestionIndex);
 });
+
+function renderQuestion(index) {
+    const q = currentQuestions[index];
+    const savedAnswer = answers[index] || "";
+
+    questionList.innerHTML = `
+        <div class="question">
+            <div class="question-label">Question ${index + 1} of ${currentQuestions.length}</div>
+            <div class="question-expression">${q.question}</div>
+            <input type="text" id="answerInput" class="answer-box" value="${savedAnswer}">
+        </div>
+        <div style="margin-top: 10px;">
+            ${index > 0 ? '<button type="button" id="prevBtn">Previous</button>' : ''}
+            ${index < currentQuestions.length - 1 ? '<button type="button" id="nextBtn">Next</button>' : ''}
+            ${index === currentQuestions.length - 1 ? '<button type="submit" id="submitBtn">Submit</button>' : ''}
+        </div>
+    `;
+
+    if (index > 0) {
+        document.getElementById("prevBtn").addEventListener("click", () => {
+            answers[index] = document.getElementById("answerInput").value.trim();
+            currentQuestionIndex--;
+            renderQuestion(currentQuestionIndex);
+        });
+    }
+
+    if (index < currentQuestions.length - 1) {
+        document.getElementById("nextBtn").addEventListener("click", () => {
+            answers[index] = document.getElementById("answerInput").value.trim();
+            currentQuestionIndex++;
+            renderQuestion(currentQuestionIndex);
+        });
+    }
+}
 
 answerForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const answers = Array.from(answerForm.querySelectorAll('input[name="answer"]'))
-                         .map(input => input.value.trim());
+    answers[currentQuestionIndex] = document.getElementById("answerInput").value.trim();
 
     const res = await fetch("/submit", {
         method: "POST",
@@ -123,4 +142,5 @@ answerForm.addEventListener("submit", async function(event) {
     `;
 
     resultsDiv.classList.remove("hidden");
+    testContainer.classList.add("hidden");
 });

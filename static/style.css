@@ -59,3 +59,7 @@ label {
     width: 120px;
     padding: 5px;
 }
+.hidden {
+    display: none;
+}
+
