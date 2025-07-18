@@ -73,5 +73,15 @@ label {
     padding: 8px 16px;
     font-size: 1em;
 }
+#nextBtn, #submitBtn {
+    order: 3;
+}
+#prevBtn {
+    order: 2;
+}
+#exitBtn {
+    order: 1;
+}
+
 
 

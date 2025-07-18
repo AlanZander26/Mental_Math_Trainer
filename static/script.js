@@ -99,11 +99,30 @@ function renderQuestion(index) {
             <input type="text" id="answerInput" class="answer-box" value="${savedAnswer}">
         </div>
         <div class="nav-buttons">
-            <button type="button" id="exitBtn">Exit</button>
-            <button type="button" id="prevBtn" style="visibility: ${index > 0 ? 'visible' : 'hidden'};">Previous</button>
             ${index < currentQuestions.length - 1? '<button type="button" id="nextBtn">Next</button>': '<button type="submit" id="submitBtn">Submit</button>'}
+            <button type="button" id="prevBtn" style="visibility: ${index > 0 ? 'visible' : 'hidden'};">Previous</button>
+            <button type="button" id="exitBtn">Exit</button>
         </div>
     `;
+
+    const input = document.getElementById("answerInput");
+    input.focus();  // Optional: auto-focus input
+
+    input.addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();  // 🛑 Don't submit the form
+
+            const nextBtn = document.getElementById("nextBtn");
+            const submitBtn = document.getElementById("submitBtn");
+
+            if (nextBtn) {
+                nextBtn.click();
+            } else if (submitBtn) {
+                submitBtn.click();
+            }
+        }
+    });
+
 
     if (index > 0) {
         document.getElementById("prevBtn").addEventListener("click", () => {
