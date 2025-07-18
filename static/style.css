@@ -82,6 +82,42 @@ label {
 #exitBtn {
     order: 1;
 }
+.result-card {
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 30px;
+    background-color: #fdfdfd;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+.result-card h2 {
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    color: #333;
+}
+.result-item {
+    font-size: 1.2em;
+    margin-bottom: 8px;
+}
+.exit-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-weight: bold;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.exit-button:hover {
+    background-color: #45a049;
+}
+
 
 
 

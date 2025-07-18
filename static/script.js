@@ -165,11 +165,14 @@ answerForm.addEventListener("submit", async function(event) {
     const data = await res.json();
 
     resultsDiv.innerHTML = `
-        <h2>Result</h2>
-        <p>Score: ${data.score}</p>
-        <p>Correct: ${data.correct} / ${data.total} (${data.accuracy}%)</p>
-        <button type="button" id="exitAfterResults">Exit</button>
-    `;
+    <div class="result-card">
+        <h2>📊 Test Results</h2>
+        <div class="result-item"><strong>Score:</strong> ${data.score}</div>
+        <div class="result-item"><strong>Correct:</strong> ${data.correct} / ${data.total}</div>
+        <div class="result-item"><strong>Accuracy:</strong> ${data.accuracy}%</div>
+        <button type="button" id="exitAfterResults" class="exit-button">Exit</button>
+    </div>
+`;
 
     resultsDiv.classList.remove("hidden");
     testContainer.classList.add("hidden");
