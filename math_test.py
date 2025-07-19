@@ -58,7 +58,8 @@ class Test:
             if exact_division and op == "/":
                 divs = divisors(n1)
                 if len(divs) > 2:
-                    n2 = np.random.choice(divs[1:-1])
+                    filtered_divs = [d for d in divs if r2[0] <= d <= r2[1] and d != 1 and d != n1]
+                    n2 = np.random.choice(filtered_divs)
                 elif divs:
                     n2 = np.random.choice(divs)
             n1 = n1 * 10.0 ** (-np.random.choice(np.arange(decimals[0] + 1)))
