@@ -8,6 +8,31 @@ let currentQuestions = [];
 let currentQuestionIndex = 0;
 let answers = [];
 
+
+const modeRadios = document.querySelectorAll('input[name="mode"]');
+const questionsInput = document.getElementById("questionsInput");
+const timeInput = document.getElementById("timeInput");
+
+let startTime = null;
+let timer = null;
+let timeLimit = null;
+let timeMode = false;
+let timerInterval = null;
+
+
+modeRadios.forEach(radio => {
+    radio.addEventListener("change", () => {
+        if (radio.value === "questions") {
+            questionsInput.classList.remove("hidden");
+            timeInput.classList.add("hidden");
+        } else {
+            questionsInput.classList.add("hidden");
+            timeInput.classList.remove("hidden");
+        }
+    });
+});
+
+
 const opCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
 const opToRangeId = {
     '+': 'range-plus',
@@ -34,8 +59,52 @@ opCheckboxes.forEach(checkbox => {
 settingsForm.addEventListener("submit", async function(event) {
     event.preventDefault();
 
-    const number_questions = parseInt(document.getElementById("numQuestions").value);
-    const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    timeMode = document.querySelector('input[name="mode"]:checked').value === "time";
+    timeLimit = parseInt(document.getElementById("timeLimit").value);
+
+    startTime = Date.now();
+    const timerDisplay = document.getElementById("timerDisplay");
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(1, "0");
+        const s = (seconds % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    }
+
+    if (timeMode) {
+        let remaining = timeLimit;
+        timerDisplay.textContent = `⏱ ${formatTime(remaining)}`;
+        timerInterval = setInterval(() => {
+            remaining--;
+            timerDisplay.textContent = `⏱ ${formatTime(remaining)}`;
+            if (remaining <= 0) {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+    } else {
+        timerDisplay.textContent = `⏱ 0:00`;
+        timerInterval = setInterval(() => {
+            const now = Date.now();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            timerDisplay.textContent = `⏱ ${formatTime(elapsed)}`;
+        }, 1000);
+    }
+
+
+    if (timeMode) {
+        timer = setTimeout(() => {
+            answerForm.requestSubmit(); // auto-submit
+        }, timeLimit * 1000);
+    }
+
+
+    let number_questions;
+    if (timeMode) {
+        number_questions = Math.ceil(timeLimit * 1.5); // dynamic for Time Challenge
+    } else {
+        number_questions = parseInt(document.getElementById("numQuestions").value);
+    }
+        const operations = Array.from(settingsForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
 
     const opMap = {
         "+": "plus",
@@ -94,7 +163,9 @@ function renderQuestion(index) {
 
     questionList.innerHTML = `
         <div class="question">
-            <div class="question-label">Question ${index + 1} of ${currentQuestions.length}</div>
+            <div class="question-label">
+                Question ${index + 1}${timeMode ? "" : " of " + currentQuestions.length}
+            </div>
             <div class="question-expression">${q.question}</div>
             <input type="text" id="answerInput" class="answer-box" value="${savedAnswer}">
         </div>
@@ -156,6 +227,14 @@ answerForm.addEventListener("submit", async function(event) {
 
     answers[currentQuestionIndex] = document.getElementById("answerInput").value.trim();
 
+    const endTime = Date.now();
+    const timeTaken = Math.round((endTime - startTime) / 1000); // in seconds
+    if (timer) clearTimeout(timer);
+    clearInterval(timerInterval);
+    document.getElementById("timerDisplay").textContent = "";
+
+
+
     const res = await fetch("/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -164,12 +243,16 @@ answerForm.addEventListener("submit", async function(event) {
 
     const data = await res.json();
 
+    let answeredCount = answers.filter(a => a !== "").length
+
     resultsDiv.innerHTML = `
         <div class="result-card">
             <h2>📊 Test Results</h2>
             <div class="result-item"><strong>Score:</strong> ${data.score}</div>
-            <div class="result-item"><strong>Correct:</strong> ${data.correct} / ${data.total}</div>
+            <div class="result-item"><strong>Correct:</strong> ${data.correct} / ${timeMode ? answeredCount : data.total}</div>
             <div class="result-item"><strong>Accuracy:</strong> ${data.accuracy}%</div>
+            ${timeMode? `<div class="result-item"><strong>Time Limit:</strong> ${timeLimit} sec</div>
+            <div class="result-item"><strong>Questions Answered:</strong> ${answeredCount}</div>`: `<div class="result-item"><strong>Time Taken:</strong> ${timeTaken} sec</div>`}
             <button type="button" id="exitAfterResults" class="exit-button">Exit</button>
             <button type="button" id="viewAnswersBtn" class="view-button">View Answers</button>
             <div id="answerReview" class="hidden"></div>
@@ -180,7 +263,9 @@ answerForm.addEventListener("submit", async function(event) {
         const container = document.getElementById("answerReview");
         container.classList.remove("hidden");
     
-        container.innerHTML = data.results.map((r, i) => {
+        const limitedResults = data.results.slice(0, answeredCount);
+    
+        container.innerHTML = limitedResults.map((r, i) => {
             const bgColor = r.status === "correct" ? "lightgreen" : "#f8d0d0";
             return `
                 <div class="answer-block" style="background-color: ${bgColor};">
@@ -191,6 +276,7 @@ answerForm.addEventListener("submit", async function(event) {
             `;
         }).join("");
     });
+    
     
 
     resultsDiv.classList.remove("hidden");
