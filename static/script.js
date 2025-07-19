@@ -213,12 +213,16 @@ function renderQuestion(index) {
 
     document.getElementById("exitBtn").addEventListener("click", () => {
         if (confirm("Are you sure you want to exit the test? All progress will be lost.")) {
-            // Reset the test view
+            if (timer) clearTimeout(timer);
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById("timerDisplay").textContent = "";
+    
             testContainer.classList.add("hidden");
             resultsDiv.classList.add("hidden");
             document.getElementById("settingsForm").classList.remove("hidden");
         }
     });
+    
     
 }
 
