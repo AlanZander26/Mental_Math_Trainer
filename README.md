@@ -8,5 +8,10 @@ A simple web app to help you sharpen your mental arithmetic skills. Practice bas
 Ideal for students, speed-runners, or anyone looking to keep their brain sharp.
 
 ---
+## Use:
+
+Type: `python3 app.py` and then copy the link into your favorite browser. Have fun!
+
+---
 
 Pull requests and suggestions welcome!
